@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pedidos - State em PHP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5 text-center">
+        <h1 class="text-primary mb-4">🏪 Sistema de Pedidos (PHP State)</h1>
+
+        <h3 id="status" class="text-primary">Pendente</h3>
+        <div class="fs-1 mb-3" id="icone">⏳</div>
+        <p id="descricao" class="text-muted">Aguardando processamento</p>
+
+        <div class="btn-group my-3">
+            <button class="btn btn-success" onclick="enviarAcao('prosseguir')">⏭️ Prosseguir</button>
+            <button class="btn btn-danger" onclick="enviarAcao('cancelar')">❌ Cancelar</button>
+            <button class="btn btn-secondary" onclick="enviarAcao('resetar')">🔄 Novo Pedido</button>
+        </div>
+
+        <div class="mt-4 text-start">
+            <h5>📝 Histórico</h5>
+            <div id="historico" class="border rounded p-3 bg-white" style="height: 250px; overflow-y:auto;">
+                <div><strong>⏳ Pedido criado</strong> - <small>Agora</small></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function enviarAcao(acao) {
+            fetch('comState.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'acao=' + acao
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('status').textContent = data.status;
+                document.getElementById('descricao').textContent = data.descricao;
+                document.getElementById('icone').textContent = data.icone;
+                adicionarHistorico(data.mensagem);
+            });
+        }
+
+        function adicionarHistorico(mensagem) {
+            const agora = new Date().toLocaleTimeString('pt-BR');
+            const historico = document.getElementById('historico');
+            const novoItem = document.createElement('div');
+            novoItem.innerHTML = `<strong>${mensagem}</strong> - <small>${agora}</small>`;
+            historico.prepend(novoItem);
+        }
+    </script>
+</body>
+</html>
